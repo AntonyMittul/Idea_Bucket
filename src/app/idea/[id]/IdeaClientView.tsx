@@ -79,12 +79,24 @@ export function IdeaClientView({ initialIdea }: { initialIdea: any }) {
           </div>
           <div className="input-group">
             <label className="input-label">Status</label>
-            <select className="input-field" value={status} onChange={e => setStatus(e.target.value)} style={{ backgroundColor: 'rgba(0,0,0,0.2)' }}>
-              <option value="Not Started">Not Started</option>
-              <option value="In Progress">In Progress</option>
-              <option value="Completed">Completed</option>
-              <option value="Archived">Archived</option>
-            </select>
+            <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
+              {["Not Started", "In Progress", "Completed", "Archived"].map(s => (
+                <button
+                  key={s}
+                  type="button"
+                  onClick={() => setStatus(s)}
+                  className={`btn ${status === s ? 'btn-primary' : 'btn-secondary'}`}
+                  style={{ 
+                    padding: '8px 16px', 
+                    fontSize: '14px',
+                    backgroundColor: status === s ? 'var(--primary)' : 'rgba(0,0,0,0.2)',
+                    borderColor: status === s ? 'var(--primary)' : 'var(--border)'
+                  }}
+                >
+                  {s}
+                </button>
+              ))}
+            </div>
           </div>
           <div className="input-group">
             <label className="input-label">Description</label>
@@ -111,15 +123,6 @@ export function IdeaClientView({ initialIdea }: { initialIdea: any }) {
             <div>Updated: {formatDate(initialIdea.updatedAt)}</div>
           </div>
 
-          <div className="detail-section">
-            <h3>Resources</h3>
-            <div className="detail-section-empty">No resources yet</div>
-          </div>
-
-          <div className="detail-section">
-            <h3>Notes</h3>
-            <div className="detail-section-empty">No notes yet</div>
-          </div>
         </>
       )}
     </div>
