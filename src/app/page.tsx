@@ -7,7 +7,7 @@ export default async function Home() {
   const session = await auth()
   
   if (!session?.user?.id) {
-    redirect("/api/auth/signin")
+    redirect("/login")
   }
 
   const ideas = await prisma.idea.findMany({

@@ -3,7 +3,8 @@ import { useState, useRef, useEffect } from "react"
 import { IdeaCard } from "./IdeaCard"
 import { FloatingActionButton } from "./FloatingActionButton"
 import { AddIdeaModal } from "./AddIdeaModal"
-import { Search, Lightbulb } from "lucide-react"
+import { Search, Lightbulb, LogOut } from "lucide-react"
+import { signOut } from "next-auth/react"
 
 export function Dashboard({ initialIdeas }: { initialIdeas: any[] }) {
   const [search, setSearch] = useState("")
@@ -35,12 +36,21 @@ export function Dashboard({ initialIdeas }: { initialIdeas: any[] }) {
 
   return (
     <>
-      <header className="app-header">
-        <div className="app-title-row">
-          <Lightbulb size={28} color="var(--primary)" />
-          <h1 className="app-title">Idea Bucket</h1>
+      <header className="app-header flex justify-between items-center">
+        <div>
+          <div className="app-title-row">
+            <Lightbulb size={28} color="var(--primary)" />
+            <h1 className="app-title">Idea Bucket</h1>
+          </div>
+          <p className="app-tagline">Never lose a good idea.</p>
         </div>
-        <p className="app-tagline">Never lose a good idea.</p>
+        <button 
+          onClick={() => signOut({ callbackUrl: '/login' })}
+          className="text-muted-foreground hover:text-foreground transition-colors p-2"
+          title="Logout"
+        >
+          <LogOut size={20} />
+        </button>
       </header>
       
       <div className="search-container">
