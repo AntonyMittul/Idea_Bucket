@@ -26,29 +26,26 @@ export function AddIdeaModal({ isOpen, onClose }: { isOpen: boolean, onClose: ()
     }
   }
 
-  const handleSave = async (e: React.FormEvent) => {
+  const handleSave = (e: React.FormEvent) => {
     e.preventDefault()
     if (!title.trim()) return
 
-    setIsSaving(true)
-    try {
-      const res = await fetch("/api/ideas", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ title, description, status: "Not Started" })
-      })
+    const tempTitle = title
+    const tempDesc = description
 
-      if (res.ok) {
-        setTitle("")
-        setDescription("")
-        onClose()
-        router.refresh()
-      }
-    } catch (error) {
-      console.error(error)
-    } finally {
-      setIsSaving(false)
-    }
+    // Optimistically close modal instantly
+    setTitle("")
+    setDescription("")
+    onClose()
+
+    // Fire network request in background
+    fetch("/api/ideas", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ title: tempTitle, description: tempDesc, status: "Not Started" })
+    }).then(() => {
+      router.refresh()
+    }).catch(console.error)
   }
 
   return (

@@ -12,36 +12,30 @@ export function IdeaClientView({ initialIdea }: { initialIdea: any }) {
   const [status, setStatus] = useState(initialIdea.status)
   const [isSaving, setIsSaving] = useState(false)
 
-  const handleSave = async () => {
-    setIsSaving(true)
-    try {
-      const res = await fetch(`/api/ideas/${initialIdea.id}`, {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ title, description, status })
-      })
-      if (res.ok) {
-        setIsEditing(false)
-        router.refresh()
-      }
-    } catch (e) {
-      console.error(e)
-    } finally {
-      setIsSaving(false)
-    }
+  const handleSave = () => {
+    // Optimistically exit edit mode instantly
+    setIsEditing(false)
+
+    // Fire network request in background
+    fetch(`/api/ideas/${initialIdea.id}`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ title, description, status })
+    }).then(() => {
+      router.refresh()
+    }).catch(console.error)
   }
 
-  const handleDelete = async () => {
+  const handleDelete = () => {
     if (!confirm("Are you sure you want to delete this idea?")) return
-    try {
-      const res = await fetch(`/api/ideas/${initialIdea.id}`, { method: 'DELETE' })
-      if (res.ok) {
-        router.push("/")
-        router.refresh()
-      }
-    } catch (e) {
-      console.error(e)
-    }
+    
+    // Optimistically route away instantly
+    router.push("/")
+    
+    // Fire network request in background
+    fetch(`/api/ideas/${initialIdea.id}`, { method: 'DELETE' }).then(() => {
+      router.refresh()
+    }).catch(console.error)
   }
 
   const formatDate = (dateString: string) => {
