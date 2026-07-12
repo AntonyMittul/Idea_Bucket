@@ -1,49 +1,56 @@
 import { NextResponse } from "next/server"
-import { auth } from "@/auth"
 import prisma from "@/lib/prisma"
 
-type Props = { params: Promise<{ id: string }> }
-
-export async function PUT(req: Request, props: Props) {
-  const session = await auth()
-  if (!session?.user?.id) return new NextResponse("Unauthorized", { status: 401 })
-  const params = await props.params
-  const id = params.id
-  
+export async function PUT(
+  req: Request,
+  props: { params: Promise<{ id: string }> }
+) {
   try {
+    const params = await props.params;
     const { title, description, status } = await req.json()
-    
-    const idea = await prisma.idea.findUnique({ where: { id } })
-    if (!idea || idea.userId !== session.user.id) {
-      return new NextResponse("Not Found / Unauthorized", { status: 404 })
+
+    const idea = await prisma.idea.findUnique({
+      where: { id: params.id }
+    })
+
+    if (!idea) {
+      return NextResponse.json({ message: "Not found" }, { status: 404 })
     }
 
-    const updated = await prisma.idea.update({
-      where: { id },
+    const updatedIdea = await prisma.idea.update({
+      where: { id: params.id },
       data: { title, description, status }
     })
 
-    return NextResponse.json(updated)
+    return NextResponse.json(updatedIdea)
   } catch (error) {
-    return new NextResponse("Internal Server Error", { status: 500 })
+    console.error(error)
+    return NextResponse.json({ message: "Internal server error" }, { status: 500 })
   }
 }
 
-export async function DELETE(req: Request, props: Props) {
-  const session = await auth()
-  if (!session?.user?.id) return new NextResponse("Unauthorized", { status: 401 })
-  const params = await props.params
-  const id = params.id
-  
+export async function DELETE(
+  req: Request,
+  props: { params: Promise<{ id: string }> }
+) {
   try {
-    const idea = await prisma.idea.findUnique({ where: { id } })
-    if (!idea || idea.userId !== session.user.id) {
-      return new NextResponse("Not Found / Unauthorized", { status: 404 })
+    const params = await props.params;
+    
+    const idea = await prisma.idea.findUnique({
+      where: { id: params.id }
+    })
+
+    if (!idea) {
+      return NextResponse.json({ message: "Not found" }, { status: 404 })
     }
 
-    await prisma.idea.delete({ where: { id } })
+    await prisma.idea.delete({
+      where: { id: params.id }
+    })
+
     return new NextResponse(null, { status: 204 })
   } catch (error) {
-    return new NextResponse("Internal Server Error", { status: 500 })
+    console.error(error)
+    return NextResponse.json({ message: "Internal server error" }, { status: 500 })
   }
 }
