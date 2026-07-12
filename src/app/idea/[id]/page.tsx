@@ -2,6 +2,8 @@ import { redirect } from "next/navigation"
 import prisma from "@/lib/prisma"
 import { IdeaClientView } from "./IdeaClientView"
 
+export const dynamic = "force-dynamic"
+
 export default async function IdeaPage(props: { params: Promise<{ id: string }> }) {
   const params = await props.params;
   
