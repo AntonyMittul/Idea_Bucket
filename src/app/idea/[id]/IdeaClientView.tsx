@@ -1,41 +1,42 @@
 "use client"
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { useRouter } from "next/navigation"
 import Link from "next/link"
 import { ArrowLeft, Trash2, Edit2, Save, X } from "lucide-react"
+import { useIdeas, Idea } from "@/hooks/useIdeas"
 
-export function IdeaClientView({ initialIdea }: { initialIdea: any }) {
+export function IdeaClientView({ ideaId }: { ideaId: string }) {
   const router = useRouter()
+  const { getIdea, updateIdea, deleteIdea, isLoaded } = useIdeas()
+  const initialIdea = getIdea(ideaId)
+
   const [isEditing, setIsEditing] = useState(false)
-  const [title, setTitle] = useState(initialIdea.title)
-  const [description, setDescription] = useState(initialIdea.description || "")
-  const [status, setStatus] = useState(initialIdea.status)
+  const [title, setTitle] = useState("")
+  const [description, setDescription] = useState("")
+  const [status, setStatus] = useState("")
   const [isSaving, setIsSaving] = useState(false)
 
-  const handleSave = () => {
-    // Optimistically exit edit mode instantly
-    setIsEditing(false)
+  // Sync state when idea loads
+  useEffect(() => {
+    if (initialIdea) {
+      setTitle(initialIdea.title)
+      setDescription(initialIdea.description || "")
+      setStatus(initialIdea.status)
+    }
+  }, [initialIdea])
 
-    // Fire network request in background
-    fetch(`/api/ideas/${initialIdea.id}`, {
-      method: 'PUT',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ title, description, status })
-    }).then(() => {
-      router.refresh()
-    }).catch(console.error)
+  if (!isLoaded) return <div style={{ padding: '40px' }}>Loading...</div>
+  if (!initialIdea) return <div style={{ padding: '40px' }}>Idea not found.</div>
+
+  const handleSave = () => {
+    setIsEditing(false)
+    updateIdea(ideaId, { title, description, status })
   }
 
   const handleDelete = () => {
     if (!confirm("Are you sure you want to delete this idea?")) return
-    
-    // Optimistically route away instantly
+    deleteIdea(ideaId)
     router.push("/")
-    
-    // Fire network request in background
-    fetch(`/api/ideas/${initialIdea.id}`, { method: 'DELETE' }).then(() => {
-      router.refresh()
-    }).catch(console.error)
   }
 
   const formatDate = (dateString: string) => {

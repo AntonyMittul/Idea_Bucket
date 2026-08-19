@@ -3,7 +3,7 @@ import { useEffect, useRef, useState } from "react"
 import { motion, AnimatePresence } from "framer-motion"
 import { useRouter } from "next/navigation"
 
-export function AddIdeaModal({ isOpen, onClose }: { isOpen: boolean, onClose: () => void }) {
+export function AddIdeaModal({ isOpen, onClose, onAddIdea }: { isOpen: boolean, onClose: () => void, onAddIdea: (t: string, d: string) => void }) {
   const [title, setTitle] = useState("")
   const [description, setDescription] = useState("")
   const [isSaving, setIsSaving] = useState(false)
@@ -36,16 +36,8 @@ export function AddIdeaModal({ isOpen, onClose }: { isOpen: boolean, onClose: ()
     // Optimistically close modal instantly
     setTitle("")
     setDescription("")
+    onAddIdea(tempTitle, tempDesc)
     onClose()
-
-    // Fire network request in background
-    fetch("/api/ideas", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ title: tempTitle, description: tempDesc, status: "Not Started" })
-    }).then(() => {
-      router.refresh()
-    }).catch(console.error)
   }
 
   return (

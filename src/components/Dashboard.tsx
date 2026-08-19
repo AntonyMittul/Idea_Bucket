@@ -4,8 +4,10 @@ import { IdeaCard } from "./IdeaCard"
 import { FloatingActionButton } from "./FloatingActionButton"
 import { AddIdeaModal } from "./AddIdeaModal"
 import { Search, Lightbulb } from "lucide-react"
+import { useIdeas } from "@/hooks/useIdeas"
 
-export function Dashboard({ initialIdeas }: { initialIdeas: any[] }) {
+export function Dashboard() {
+  const { ideas, isLoaded, addIdea } = useIdeas()
   const [search, setSearch] = useState("")
   const [isModalOpen, setIsModalOpen] = useState(false)
 
@@ -23,7 +25,7 @@ export function Dashboard({ initialIdeas }: { initialIdeas: any[] }) {
     return () => window.removeEventListener('keydown', handleKeyDown)
   }, [])
 
-  const filtered = initialIdeas.filter(idea => {
+  const filtered = ideas.filter(idea => {
     const matchesSearch = idea.title.toLowerCase().includes(search.toLowerCase()) || 
                           (idea.description && idea.description.toLowerCase().includes(search.toLowerCase()))
     
@@ -90,7 +92,7 @@ export function Dashboard({ initialIdeas }: { initialIdeas: any[] }) {
       </div>
 
       <FloatingActionButton onClick={() => setIsModalOpen(true)} />
-      <AddIdeaModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} />
+      <AddIdeaModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} onAddIdea={addIdea} />
     </>
   )
 }

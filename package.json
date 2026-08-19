@@ -10,7 +10,6 @@
     "postinstall": "prisma generate"
   },
   "dependencies": {
-    "@prisma/client": "^5.22.0",
     "framer-motion": "^12.42.2",
     "lucide-react": "^1.24.0",
     "next": "16.2.10",
@@ -23,7 +22,6 @@
     "@types/react-dom": "^19",
     "eslint": "^9",
     "eslint-config-next": "16.2.10",
-    "prisma": "^5.22.0",
     "typescript": "^5"
   }
 }
