@@ -70,26 +70,26 @@ export function Dashboard() {
         ))}
       </div>
 
-      <div className="ideas-feed">
-        {filtered.length === 0 ? (
-          search || filter !== "All" ? (
-            <div className="empty-state">
-              <p>No ideas match your search or filter.</p>
-            </div>
-          ) : (
-            <div className="empty-state">
-              <Lightbulb size={64} className="empty-state-icon" strokeWidth={1} />
-              <h3>No ideas yet</h3>
-              <p>Capture your first idea before it slips away.</p>
-              <button className="btn btn-primary" onClick={() => setIsModalOpen(true)}>
-                Create Idea
-              </button>
-            </div>
-          )
+      {filtered.length === 0 ? (
+        search || filter !== "All" ? (
+          <div className="empty-state">
+            <p>No ideas match your search or filter.</p>
+          </div>
         ) : (
-          filtered.map(idea => <IdeaCard key={idea.id} idea={idea} />)
-        )}
-      </div>
+          <div className="empty-state">
+            <Lightbulb size={64} className="empty-state-icon" strokeWidth={1} />
+            <h3>No ideas yet</h3>
+            <p>Capture your first idea before it slips away.</p>
+            <button className="btn btn-primary" onClick={() => setIsModalOpen(true)}>
+              Create Idea
+            </button>
+          </div>
+        )
+      ) : (
+        <div className="ideas-feed">
+          {filtered.map(idea => <IdeaCard key={idea.id} idea={idea} />)}
+        </div>
+      )}
 
       <FloatingActionButton onClick={() => setIsModalOpen(true)} />
       <AddIdeaModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} onAddIdea={addIdea} />
